@@ -3,9 +3,6 @@ Terminals unused in grammar
    QMARK
    LBRACE
    RBRACE
-   SINGLECHAR
-   ERROR
-   TEOF
 
 
 Grammar
@@ -186,92 +183,89 @@ RBRACE (300)
 LPAREN (301) 33 52 53 60 84 85
 RPAREN (302) 33 52 53 60 84 85
 DOT (303) 1 25 26
-NUMBER (304) 11 12 13 25 26 82
-IDENTIFIER (305) 2 3 5 6 9 10 30 31 51 56 59 60 85
-SINGLECHAR (306)
-ERROR (307)
-TEOF (308)
-STRING (309) 14
-LOWER_THAN_ELSE (310)
-ELSE (311) 50
-UMINUS (312)
+LOWER_THAN_ELSE (304)
+ELSE (305) 50
+IDENTIFIER (306) 2 3 5 6 9 10 30 31 51 56 59 60 85
+STRING (307) 14
+NUMBER (308) 11 12 13 25 26 82
+UMINUS (309)
 
 
 Nonterminals, with rules where they appear
 
-$accept (58)
+$accept (55)
     on left: 0
-program (59)
+program (56)
     on left: 1, on right: 0
-program_head (60)
+program_head (57)
     on left: 2 3, on right: 1
-program_body (61)
+program_body (58)
     on left: 4, on right: 1
-idlist (62)
+idlist (59)
     on left: 5 6, on right: 2 6 17 18 39
-const_declarations (63)
+const_declarations (60)
     on left: 7 8, on right: 4 40
-const_declaration (64)
+const_declaration (61)
     on left: 9 10, on right: 8 10
-const_value (65)
+const_value (62)
     on left: 11 12 13 14, on right: 9 10
-var_declarations (66)
+var_declarations (63)
     on left: 15 16, on right: 4 40
-var_declaration (67)
+var_declaration (64)
     on left: 17 18, on right: 16 18
-type (68)
+type (65)
     on left: 19 20, on right: 17 18
-basic_type (69)
+basic_type (66)
     on left: 21 22 23 24, on right: 19 20 31 39
-period (70)
+period (67)
     on left: 25 26, on right: 20 26
-subprogram_declarations (71)
+subprogram_declarations (68)
     on left: 27 28, on right: 4 28
-subprogram (72)
+subprogram (69)
     on left: 29, on right: 28
-subprogram_head (73)
+subprogram_head (70)
     on left: 30 31, on right: 29
-formal_parameter (74)
+formal_parameter (71)
     on left: 32 33, on right: 30 31
-parameter_list (75)
+parameter_list (72)
     on left: 34 35, on right: 33 35
-parameter (76)
+parameter (73)
     on left: 36 37, on right: 34 35
-var_parameter (77)
+var_parameter (74)
     on left: 38, on right: 36
-value_parameter (78)
+value_parameter (75)
     on left: 39, on right: 37 38
-subprogram_body (79)
+subprogram_body (76)
     on left: 40, on right: 29
-compound_statement (80)
+compound_statement (77)
     on left: 41, on right: 4 40 48
-statement_list (81)
+statement_list (78)
     on left: 42 43, on right: 41 43
-statement (82)
+statement (79)
     on left: 44 45 46 47 48 49 50 51 52 53, on right: 42 43 49 50 51
-variable_list (83)
+variable_list (80)
     on left: 54 55, on right: 52 55
-variable (84)
+variable (81)
     on left: 56, on right: 45 54 55 83
-id_varpart (85)
+id_varpart (82)
     on left: 57 58, on right: 56
-procedure_call (86)
+procedure_call (83)
     on left: 59 60, on right: 47
-expression_list (87)
+expression_list (84)
     on left: 61 62, on right: 53 60 62 85
-expression (88)
+expression (85)
     on left: 63 64, on right: 45 46 49 50 51 58 61 62 84
-relop (89)
+relop (86)
     on left: 65 66 67 68 69 70, on right: 64
-simple_expression (90)
+simple_expression (87)
     on left: 71 72, on right: 63 64 72
-addop (91)
+addop (88)
     on left: 73 74 75, on right: 72
-term (92)
+term (89)
     on left: 76 77, on right: 71 72 77
-mulop (93)
+mulop (90)
     on left: 78 79 80 81, on right: 77
-factor (94)
+factor (91)
     on left: 82 83 84 85 86 87, on right: 76 77 86 87
 
 
@@ -449,8 +443,8 @@ state 20
 
     PLUS    shift, and go to state 26
     MINUS   shift, and go to state 27
-    NUMBER  shift, and go to state 28
-    STRING  shift, and go to state 29
+    STRING  shift, and go to state 28
+    NUMBER  shift, and go to state 29
 
     const_value  go to state 30
 
@@ -519,16 +513,16 @@ state 27
 
 state 28
 
-   11 const_value: NUMBER .
+   14 const_value: STRING .
 
-    $default  reduce using rule 11 (const_value)
+    $default  reduce using rule 14 (const_value)
 
 
 state 29
 
-   14 const_value: STRING .
+   11 const_value: NUMBER .
 
-    $default  reduce using rule 14 (const_value)
+    $default  reduce using rule 11 (const_value)
 
 
 state 30
@@ -647,8 +641,8 @@ state 42
 
     PLUS    shift, and go to state 26
     MINUS   shift, and go to state 27
-    NUMBER  shift, and go to state 28
-    STRING  shift, and go to state 29
+    STRING  shift, and go to state 28
+    NUMBER  shift, and go to state 29
 
     const_value  go to state 66
 
@@ -748,8 +742,8 @@ state 54
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 79
@@ -915,8 +909,8 @@ state 72
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 104
@@ -932,8 +926,8 @@ state 73
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable  go to state 78
     factor    go to state 105
@@ -946,8 +940,8 @@ state 74
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable  go to state 78
     factor    go to state 106
@@ -960,8 +954,8 @@ state 75
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 107
@@ -972,13 +966,6 @@ state 75
 
 state 76
 
-   82 factor: NUMBER .
-
-    $default  reduce using rule 82 (factor)
-
-
-state 77
-
    56 variable: IDENTIFIER . id_varpart
    85 factor: IDENTIFIER . LPAREN expression_list RPAREN
 
@@ -988,6 +975,13 @@ state 77
     $default  reduce using rule 57 (id_varpart)
 
     id_varpart  go to state 88
+
+
+state 77
+
+   82 factor: NUMBER .
+
+    $default  reduce using rule 82 (factor)
 
 
 state 78
@@ -1073,8 +1067,8 @@ state 85
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression_list    go to state 130
@@ -1091,8 +1085,8 @@ state 86
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 132
@@ -1108,8 +1102,8 @@ state 87
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression_list    go to state 133
@@ -1160,8 +1154,8 @@ state 91
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 135
@@ -1307,8 +1301,8 @@ state 108
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression_list    go to state 146
@@ -1409,8 +1403,8 @@ state 119
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     simple_expression  go to state 148
@@ -1425,8 +1419,8 @@ state 120
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable  go to state 78
     term      go to state 149
@@ -1468,8 +1462,8 @@ state 125
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable  go to state 78
     factor    go to state 150
@@ -1482,8 +1476,8 @@ state 126
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 151
@@ -1733,8 +1727,8 @@ state 154
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 168
@@ -1845,8 +1839,8 @@ state 166
     MINUS       shift, and go to state 73
     NOT         shift, and go to state 74
     LPAREN      shift, and go to state 75
-    NUMBER      shift, and go to state 76
-    IDENTIFIER  shift, and go to state 77
+    IDENTIFIER  shift, and go to state 76
+    NUMBER      shift, and go to state 77
 
     variable           go to state 78
     expression         go to state 173
