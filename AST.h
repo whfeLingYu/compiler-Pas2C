@@ -16,7 +16,7 @@
 extern int yydebug;
 using namespace std;
 
-class AST {
+class AST{
 public:
     std::string str; // 终结符号的具体属性
     std::string token; // 终结符号或非终结符号本身的名称

@@ -85,12 +85,11 @@
      LPAREN = 301,
      RPAREN = 302,
      DOT = 303,
-     LOWER_THAN_ELSE = 304,
-     ELSE = 305,
-     IDENTIFIER = 306,
-     STRING = 307,
-     NUMBER = 308,
-     UMINUS = 309
+     IDENTIFIER = 304,
+     NUMBER = 305,
+     STRING = 306,
+     LOWER_THAN_ELSE = 307,
+     ELSE = 308
    };
 #endif
 /* Tokens.  */
@@ -140,43 +139,17 @@
 #define LPAREN 301
 #define RPAREN 302
 #define DOT 303
-#define LOWER_THAN_ELSE 304
-#define ELSE 305
-#define IDENTIFIER 306
-#define STRING 307
-#define NUMBER 308
-#define UMINUS 309
+#define IDENTIFIER 304
+#define NUMBER 305
+#define STRING 306
+#define LOWER_THAN_ELSE 307
+#define ELSE 308
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-{
-
-/* Line 1676 of yacc.c  */
-#line 89 ".\\parser.y"
-
-    int ival; // 用于处理整数值
-    char* sval; // 用于处理字符串
-    DataType type; // 用于处理数据类型
-    Parameter* param; // 用于处理参数
-    SymbolTableEntry* symEntry; // 用于处理符号表条目
-    Parameter* paramList; // 用于处理参数列表
-    // 定义一个结构体处理 const_value
-    struct {
-        DataType type; // 这个类型用于区分是 NUMBER 还是 STRING
-        union {
-            int ival;
-            char* sval;
-        } value;
-    } constVal;
-
-
-
-/* Line 1676 of yacc.c  */
-#line 179 "y.tab.h"
-} YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -184,4 +157,18 @@ typedef union YYSTYPE
 
 extern YYSTYPE yylval;
 
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+} YYLTYPE;
+# define yyltype YYLTYPE /* obsolescent; will be withdrawn */
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
+extern YYLTYPE yylloc;
 

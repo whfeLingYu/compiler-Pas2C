@@ -1,6 +1,6 @@
 %{
-#include <AST.h>
-#include <yacc.tab.h>
+#include "AST.h"
+#include "yacc.tab.h"
 
 //外部变量声明
 extern int yylineno;
@@ -11,6 +11,7 @@ typedef enum { INT_TYPE, REAL_TYPE, BOOLEAN_TYPE, CHAR_TYPE, FUNCTION_TYPE } Dat
 
 //语法错误信息
 vector<string> syntaxErrorInformation;
+bool haveSemanticError=false;
 
 //定义语法树
 AST* ParseTree=NULL;
@@ -98,22 +99,7 @@ void checkFunctionParameters(SymbolTableEntry* func, Parameter* calledParams, in
 
 %}
 
-%union {
-    int ival; // 用于处理整数值
-    char* sval; // 用于处理字符串
-    DataType type; // 用于处理数据类型
-    Parameter* param; // 用于处理参数
-    SymbolTableEntry* symEntry; // 用于处理符号表条目
-    Parameter* paramList; // 用于处理参数列表
-    // 定义一个结构体处理 const_value
-    struct {
-        DataType type; // 这个类型用于区分是 NUMBER 还是 STRING
-        union {
-            int ival;
-            char* sval;
-        } value;
-    } constVal;
-}
+
 
 %token PROGRAM CONST VAR PROCEDURE FUNCTION BEGIN END
 %token INTEGER REAL BOOLEAN CHAR ARRAY
@@ -121,35 +107,26 @@ void checkFunctionParameters(SymbolTableEntry* func, Parameter* calledParams, in
 %token PLUS MINUS OR MUL DIV MOD AND NOT ASSIGN
 %token GREATER EQUAL LESS LE GE LG
 %token SEMICOLON COMMA COLON QMARK LBRACKET RBRACKET LBRACE RBRACE LPAREN RPAREN DOT
+%token IDENTIFIER NUMBER STRING
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
-%token <sval> IDENTIFIER STRING
-%token <ival> NUMBER
-//%type <type> type basic_type
-//%type <constVal> const_value
-//%type <sval> variable
-//%type <symEntry> idlist
-//%type <param> formal_parameter value_parameter var_parameter parameter parameter_list
-//%type <ival> expression simple_expression term factor
-//%type <paramList> expression_list
+
 
 %start program
 
 %locations
 
 %%
-program
-    : program_head SEMICOLON program_body DOT{//正常语法，建立语法树
-        ParseTree = $$=new AST;//建立根节点
+program:
+    program_head SEMICOLON program_body DOT{//正常语法，建立语法树
+        ParseTree = $$ = new AST;//建立根节点
         $$->token = "program";
         $$->children.push_back($1);//将program_head的语法树节点作为根节点的子节点
         $$->children.push_back($2);
         $$->children.push_back($3);//将program_body的语法树节点作为根节点的子节点
         $$->children.push_back($4);
         if(yylex())//如果还有其他语法树节点
-        {
             yyerror("extra tokens at the end of the program",@4.last_line, @4.last_column+1);
-        }
     }
     |program_head error program_body DOT{//语法错误，缺少分号
         yyerror("missing semicolon", @2.last_line, @2.last_column+1);
@@ -166,7 +143,7 @@ program
         ParseTree=$$=new AST;
         $$->token = "program";
     }
-    |error program_body DOT{//语法错误，缺少program_head
+    |error SEMICOLON program_body DOT{//语法错误，缺少program_head
         yyerror("fatal error in program head, maybe missing keyword \"program\"", @1.first_line, @1.first_column, @1.last_line, @1.last_column);
         ParseTree=$$=new AST;
         $$->token = "program";
@@ -176,20 +153,20 @@ program
         ParseTree=$$=new AST;
         $$->token = "program";
     }
-    |error program_head error program_body '.'{ //program_head前包含非法记号、缺失分号
+    |error program_head error program_body DOT{ //program_head前包含非法记号、缺失分号
         yyerror("invalid token before program head, maybe missing keyword \"program\"", @$.first_line, @$.first_column, @2.first_line, @2.first_column-1);
         yerror("missing semicolon", @2.last_line, @2.last_column+1);
         ParseTree=$$=new AST
         $$->token="program";
     }
-    |error program_head ';' program_body error{ //program_head前包含非法记号、缺失点号
+    |error program_head SEMICOLON program_body error{ //program_head前包含非法记号、缺失点号
         yyerror("invalid token before program head, maybe missing keyword \"program\"", @$.first_line, @$.first_column, @2.first_line, @2.first_column-1);
         yyerror("missing dot", @4.last_line, @4.last_column+1);
         ParseTree=$$=new Type;
         $$->token = "program";
 
     }
-    |error program_head ';' error '.'{ //ERROR program_head前包含非法记号、program_body缺失
+    |error program_head SEMICOLON error DOT{ //ERROR program_head前包含非法记号、program_body缺失
         yyerror("invalid token before program head, maybe missing keyword \"program\"", @$.first_line, @$.first_column, @2.first_line, @2.first_column-1);
         yyerror("fatal error in program body", @3.last_line, @3.last_column+1, @5.first_line, @5.first_column-1);
         ParseTree=$$=new AST;
@@ -210,12 +187,6 @@ program_head
          $$=new AST;
          $$->token = "program_head";
      }
-     | PROGRAM IDENTIFIER error idlist RBRACKET{//语法错误，缺少左中括号
-         yyerror("missing left bracket", @4.last_line, @4.last_column+1);
-         $$=new AST;
-         $$->token = "program_head";
-     }
-     |
      | PROGRAM IDENTIFIER LBRACKET error RBRACKET{//语法错误，idlist识别失败
          yyerror("program identifier list missing or imcomplete", @4.first_line, @4.first_column, @4.last_line, @4.last_column);
          $$=new AST;
@@ -226,7 +197,7 @@ program_head
          $$=new AST;
          $$->token = "program_head";
      }
-    | PROGRAM IDENTIFIER{//正常
+    | PROGRAM IDENTIFIER {//正常
         $$=new AST;
         $$->token="program_head";
         $$->children.push_back($1);
@@ -234,11 +205,6 @@ program_head
     }
     | PROGRAM error{//语法错误，缺少标识符
         yyerror("missing program name",  @1.first_line, @1.first_column, @1.last_line, @1.last_column);
-        $$=new AST;
-        $$->token="program_head";
-    }
-    | PROGRAM IDENTIFIER error{//语法错误，缺少左中括号
-        yyerror("missing left bracket", @2.last_line, @2.last_column+1);
         $$=new AST;
         $$->token="program_head";
     }
@@ -676,11 +642,6 @@ subprogram_head
         $$=new AST;
         $$->token="subprogram_head";
     }
-    | PROCEDURE IDENTIFIER error{//语法错误，过程头不完整
-        yyerror("incomplete procedure head", &@$);
-        $$=new AST;
-        $$->token="subprogram_head";
-    }
     | FUNCTION error formal_parameter COLON basic_type{//语法错误，函数名缺失
         yyerror("missing function name", @1.last_line, @1.last_column+1);
         $$=new AST;
@@ -850,11 +811,6 @@ compound_statement
         $$->children.push_back($1);
         $$->children.push_back($2);
         $$->children.push_back($3);
-    }
-    | BEGIN statement_list error{//语法错误，缺少END
-        yyerror("missing keyword \"end\"", @2.last_line, @2.last_column+1);
-        $$=new AST;
-        $$->token="compound_statement";
     }
     ;
 
@@ -1163,15 +1119,9 @@ expression
 
         // 语义分析：
         // 检查两个simple_expression的类型是否兼容
-        if (!areTypesCompatible($1.type, $3.type)) {
+        if (!areTypesCompatible($1.type, $3.type))
             yyerror("Type mismatch in relational operation");
-        }
       }
-    | simple_expression error simple_expression{//语法错误，缺少relop
-        yyerror("missing relational operator", @1.last_line, @1.last_column+1);
-        $$=new AST;
-        $$->token="expression";
-    }
     ;
 
 relop
@@ -1220,8 +1170,8 @@ simple_expression
             yyerror("Type mismatch in addition/subtraction operation");
         }
       }
-    | simple_expression error term{//语法错误，缺少addop
-        yyerror("missing addition/subtraction operator", @1.last_line, @1.last_column+1);
+    |simple_expression addop error term %prec PLUS{//语法错误，缺少操作数
+        yyerror("missing operand", @2.last_line, @2.last_column+1);
         $$=new AST;
         $$->token="simple_expression";
     }
@@ -1261,7 +1211,7 @@ term
             yyerror("Type mismatch in multiplication/division/modulus/and operation");
         }
       }
-    | term error factor{//语法错误，缺少mulop
+    | term mulop error factor %prec MUL{//语法错误，缺少mulop
         yyerror("missing multiplication/division/modulus/and operator", @1.last_line, @1.last_column+1);
         $$=new AST;
         $$->token="term";
@@ -1343,11 +1293,6 @@ factor
         $$=new AST;
         $$->token
     }
-    | IDENTIFIER LPAREN expression_list error{//语法错误，缺少右括号
-        yyerror("missing right bracket", @3.last_line, @3.last_column+1);
-        $$=new AST;
-        $$->token="factor";
-    }
     | NOT factor{//正常
         $$=new AST;
         $$->token="factor";
@@ -1359,7 +1304,7 @@ factor
             yyerror("Type mismatch in NOT operation");
         }
       }
-    | MINUS factor %prec UMINUS{//正常
+    | MINUS factor %prec MINUS{//正常
         $$=new AST;
         $$->token="factor";
         $$->children.push_back($1);
